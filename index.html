@@ -19,14 +19,14 @@
         .radio-group, .checkbox-group {
              @apply flex items-center space-x-4 mt-1 flex-wrap;
         }
-        /* Direct CSS for Button Appearance, avoiding @apply for visual styles */
+        /* Direct CSS for Button Appearance - Simulating the "深入研究" style */
         .calculate-button {
-            /* Layout & Interaction still using Tailwind for convenience */
+            /* Layout & Interaction using Tailwind */
             @apply w-full text-center mt-8 text-lg cursor-pointer transition duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500;
 
-            /* Direct CSS Properties for "深入研究" button style */
+            /* Direct CSS Properties for Appearance */
             background-color: white;       /* White background */
-            color: #374151;           /* Dark Gray text (Tailwind gray-700) */
+            color: #1e40af;           /* Dark Blue text (Tailwind blue-800) */
             font-weight: bold;         /* Bold text */
             padding: 0.75rem 1rem;     /* Equivalent to py-3 px-4 */
             border-radius: 9999px;     /* Pill shape (equivalent to rounded-full) */
@@ -36,6 +36,7 @@
         .calculate-button:hover {
             background-color: #f3f4f6; /* Lighter gray on hover (Tailwind gray-100) */
             border-color: #9ca3af; /* Slightly darker border on hover (Tailwind gray-400) */
+            color: #1d4ed8; /* Slightly lighter blue on hover (Tailwind blue-700) */
         }
         .result-box {
             @apply mt-6 p-4 bg-blue-100 border border-blue-300 text-blue-800 rounded-md text-left;

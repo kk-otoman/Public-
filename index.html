@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>政企积分计算器</title>
+    <title>政企积分计算器 (带累计功能)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body {
@@ -19,25 +19,40 @@
         .radio-group, .checkbox-group {
              @apply flex items-center space-x-4 mt-1 flex-wrap;
         }
-        /* Direct CSS for Button Appearance - Simulating the "深入研究" style */
+        /* Direct CSS for Calculate Button Appearance */
         .calculate-button {
-            /* Layout & Interaction using Tailwind */
             @apply w-full text-center mt-8 text-lg cursor-pointer transition duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500;
-
-            /* Direct CSS Properties for Appearance */
-            background-color: white;       /* White background */
-            color: #1e40af;           /* Dark Blue text (Tailwind blue-800) */
-            font-weight: bold;         /* Bold text */
-            padding: 0.75rem 1rem;     /* Equivalent to py-3 px-4 */
-            border-radius: 9999px;     /* Pill shape (equivalent to rounded-full) */
-            border: 1px solid #d1d5db; /* Gray border (equivalent to border-gray-300) */
-            box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05); /* Subtle shadow (shadow-sm) */
+            background-color: white;
+            color: #1e40af; /* Dark Blue */
+            font-weight: bold;
+            padding: 0.75rem 1rem;
+            border-radius: 9999px; /* Pill shape */
+            border: 1px solid #d1d5db; /* Gray border */
+            box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
         }
         .calculate-button:hover {
-            background-color: #f3f4f6; /* Lighter gray on hover (Tailwind gray-100) */
-            border-color: #9ca3af; /* Slightly darker border on hover (Tailwind gray-400) */
-            color: #1d4ed8; /* Slightly lighter blue on hover (Tailwind blue-700) */
+            background-color: #f3f4f6;
+            border-color: #9ca3af;
+            color: #1d4ed8;
         }
+        /* Direct CSS for "Add to Total" button text style */
+        .add-to-total-button {
+             @apply mt-3 inline-block text-xs cursor-pointer hover:underline;
+             color: #1e40af; /* Dark Blue */
+             font-weight: bold;
+             background: none;
+             border: none;
+             padding: 0;
+             box-shadow: none;
+        }
+        .add-to-total-button:hover {
+             color: #1d4ed8; /* Slightly lighter blue on hover */
+        }
+        /* Style for the "Clear List" button */
+        .clear-button {
+             @apply inline-flex items-center px-3 py-1 border border-gray-300 text-xs font-medium rounded shadow-sm text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500;
+        }
+
         .result-box {
             @apply mt-6 p-4 bg-blue-100 border border-blue-300 text-blue-800 rounded-md text-left;
         }
@@ -56,14 +71,33 @@
         .formula-display, .notes-display {
             @apply text-sm text-gray-500 mt-1 italic;
         }
-        label { @apply mb-1; }
+        /* Direct CSS for Accumulation Section Box */
+        #accumulation_section {
+            @apply mt-10; /* Keep margin-top */
+            border: 1px solid #d1d5db; /* Gray border (Tailwind gray-300) */
+            border-radius: 0.375rem; /* Medium rounded corners (Tailwind rounded-md) */
+            padding: 1rem; /* Padding inside the box (Tailwind p-4) */
+            box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05); /* Subtle shadow (Tailwind shadow-sm) */
+        }
+        #accumulation_section h2 { /* Adjust title style inside the box */
+             @apply border-t-0 pt-0 mt-0 mb-3 text-lg font-semibold text-gray-700; /* Remove original top border/padding/margin */
+        }
+        #accumulation_list {
+             @apply list-disc pl-5 space-y-1 text-sm text-gray-600 mb-3;
+        }
+        #accumulation_total {
+            @apply text-lg font-semibold text-gray-800 mb-3;
+        }
+        label { @apply mb-1 block; }
+        .input-group label { @apply mb-1 block text-sm font-medium text-gray-700; }
     </style>
 </head>
 <body class="bg-gray-50 flex items-center justify-center min-h-screen p-4">
     <div class="bg-white p-8 rounded-lg shadow-lg max-w-xl w-full">
         <h1 class="text-2xl font-bold text-center text-gray-800 mb-6">政企积分计算器</h1>
 
-        <div class="mb-4">
+
+         <div class="mb-4">
             <span class="block text-sm font-medium text-gray-700 mb-1">计算类型:</span>
             <div class="radio-group">
                 <div class="flex items-center mr-4 mb-2">
@@ -86,20 +120,28 @@
                     <input type="radio" id="type_fixed_app" name="calc_type" value="fixed_app" class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300">
                     <label for="type_fixed_app" class="radio-label">固网应用</label>
                 </div>
-                 <div class="flex items-center mb-2">
+                 <div class="flex items-center mr-4 mb-2">
                     <input type="radio" id="type_ict" name="calc_type" value="ict" class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300">
                     <label for="type_ict" class="radio-label">ICT项目</label>
+                </div>
+                 <div class="flex items-center mr-4 mb-2">
+                    <input type="radio" id="type_iot" name="calc_type" value="iot" class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300">
+                    <label for="type_iot" class="radio-label">物联网标品</label>
+                </div>
+                 <div class="flex items-center mb-2">
+                    <input type="radio" id="type_idc_etc" name="calc_type" value="idc_etc" class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300">
+                    <label for="type_idc_etc" class="radio-label">IDC/跨境/BPO</label>
                 </div>
             </div>
         </div>
 
         <div id="mobile_section" class="mb-4">
               <p class="text-sm text-center text-gray-500 mb-4">(默认按单卡系数 0.8 计算)</p>
-             <div class="mb-4">
-                 <label for="mobile_price" class="block text-sm font-medium text-gray-700">套餐月租 (元):</label>
+             <div class="mb-4 input-group">
+                 <label for="mobile_price">套餐月租 (元):</label>
                  <input type="number" id="mobile_price" name="mobile_price" placeholder="例如: 29" class="input-field">
              </div>
-             <div class="mb-4">
+             <div class="mb-4 input-group">
                  <span class="block text-sm font-medium text-gray-700">本网异网系数:</span>
                  <div class="radio-group">
                      <div class="flex items-center">
@@ -112,7 +154,7 @@
                      </div>
                  </div>
              </div>
-             <div class="mb-4">
+             <div class="mb-4 input-group">
                  <span class="block text-sm font-medium text-gray-700">是否企业证件入网:</span>
                  <div class="radio-group">
                      <div class="flex items-center">
@@ -129,7 +171,7 @@
 
         <div id="broadband_section" class="hidden-section mb-4">
               <h2 class="section-title">单宽信息</h2>
-            <div class="mb-4">
+            <div class="mb-4 input-group">
                 <span class="block text-sm font-medium text-gray-700">单宽类型:</span>
                 <div class="radio-group">
                     <div class="flex items-center">
@@ -143,11 +185,11 @@
                 </div>
             </div>
             <div id="non_annual_section">
-                <div class="mb-4">
-                    <label for="monthly_contribution" class="block text-sm font-medium text-gray-700">月费贡献金额 (元):</label>
+                <div class="mb-4 input-group">
+                    <label for="monthly_contribution">月费贡献金额 (元):</label>
                     <input type="number" id="monthly_contribution" name="monthly_contribution" placeholder="例如: 50" class="input-field">
                 </div>
-                 <div class="mb-4">
+                 <div class="mb-4 input-group">
                     <span class="block text-sm font-medium text-gray-700">名单情况:</span>
                      <div class="radio-group">
                          <div class="flex items-center">
@@ -160,7 +202,7 @@
                          </div>
                      </div>
                  </div>
-                 <div class="mb-4">
+                 <div class="mb-4 input-group">
                      <span class="block text-sm font-medium text-gray-700">是否叠加FTTO:</span>
                      <div class="radio-group">
                          <div class="flex items-center">
@@ -175,11 +217,11 @@
                  </div>
             </div>
             <div id="annual_section" class="hidden-section">
-                 <div class="mb-4">
-                    <label for="annual_payment" class="block text-sm font-medium text-gray-700">年费趸交款 (元):</label>
+                 <div class="mb-4 input-group">
+                    <label for="annual_payment">年费趸交款 (元):</label>
                     <input type="number" id="annual_payment" name="annual_payment" placeholder="例如: 1200" class="input-field">
                 </div>
-                <div class="mb-4">
+                <div class="mb-4 input-group">
                     <span class="block text-sm font-medium text-gray-700">趸交年限:</span>
                      <div class="radio-group">
                          <div class="flex items-center">
@@ -192,7 +234,7 @@
                          </div>
                      </div>
                  </div>
-                 <div class="mb-4">
+                 <div class="mb-4 input-group">
                     <span class="block text-sm font-medium text-gray-700">名单情况:</span>
                      <div class="radio-group">
                          <div class="flex items-center">
@@ -205,7 +247,7 @@
                          </div>
                      </div>
                  </div>
-                 <div class="mb-4">
+                 <div class="mb-4 input-group">
                      <span class="block text-sm font-medium text-gray-700">是否叠加FTTO:</span>
                      <div class="radio-group">
                          <div class="flex items-center">
@@ -223,11 +265,11 @@
 
         <div id="convergence_section" class="hidden-section mb-4">
               <h2 class="section-title">移宽融合信息</h2>
-            <div class="mb-4">
-                <label for="convergence_contribution" class="block text-sm font-medium text-gray-700">入网套餐值贡献金额 (元):</label>
+            <div class="mb-4 input-group">
+                <label for="convergence_contribution">入网套餐值贡献金额 (元):</label>
                 <input type="number" id="convergence_contribution" name="convergence_contribution" placeholder="例如: 100" class="input-field">
             </div>
-            <div class="mb-4">
+            <div class="mb-4 input-group">
                 <span class="block text-sm font-medium text-gray-700">本网异网系数:</span>
                  <div class="radio-group">
                      <div class="flex items-center">
@@ -240,7 +282,7 @@
                      </div>
                  </div>
             </div>
-            <div class="mb-4">
+            <div class="mb-4 input-group">
                 <span class="block text-sm font-medium text-gray-700">名单情况:</span>
                  <div class="radio-group">
                      <div class="flex items-center">
@@ -253,7 +295,7 @@
                      </div>
                  </div>
             </div>
-             <div class="mb-4">
+             <div class="mb-4 input-group">
                  <span class="block text-sm font-medium text-gray-700">是否企业证件入网:</span>
                  <div class="radio-group">
                      <div class="flex items-center">
@@ -266,7 +308,7 @@
                      </div>
                  </div>
              </div>
-             <div class="mb-4">
+             <div class="mb-4 input-group">
                  <span class="block text-sm font-medium text-gray-700">是否沃企融合:</span>
                  <div class="radio-group">
                      <div class="flex items-center">
@@ -283,8 +325,8 @@
 
         <div id="dual_line_section" class="hidden-section mb-4">
              <h2 class="section-title">双线信息</h2>
-            <div class="mb-4">
-                <label for="dual_line_subtype" class="block text-sm font-medium text-gray-700">双线品类:</label>
+            <div class="mb-4 input-group">
+                <label for="dual_line_subtype">双线品类:</label>
                 <select id="dual_line_subtype" name="dual_line_subtype" class="select-field">
                     <option value="internet_non_annual">互联网专线(不含国际)-非包年</option>
                     <option value="internet_annual">互联网专线(不含国际)-包年</option>
@@ -295,15 +337,15 @@
                  <div id="dl_formula_display" class="formula-display"></div>
             </div>
             <div id="dl_common_inputs" class="sub-section">
-                 <div class="mb-4">
-                     <label for="dl_revenue" class="block text-sm font-medium text-gray-700">年准财收入 (元):</label>
+                 <div class="mb-4 input-group">
+                     <label for="dl_revenue">年准财收入 (元):</label>
                      <input type="number" id="dl_revenue" name="dl_revenue" placeholder="输入年度总收入" class="input-field">
                  </div>
-                 <div id="dl_cost_input" class="mb-4 hidden-section">
-                     <label for="dl_cost" class="block text-sm font-medium text-gray-700">年结入成本/成本 (元):</label>
+                 <div id="dl_cost_input" class="mb-4 hidden-section input-group">
+                     <label for="dl_cost">年结入成本/成本 (元):</label>
                      <input type="number" id="dl_cost" name="dl_cost" placeholder="输入年度总成本" class="input-field">
                  </div>
-                 <div class="mb-4">
+                 <div class="mb-4 input-group">
                     <span class="block text-sm font-medium text-gray-700">名单情况:</span>
                      <div class="radio-group">
                          <div class="flex items-center">
@@ -321,8 +363,8 @@
 
         <div id="fixed_app_section" class="hidden-section mb-4">
               <h2 class="section-title">固网应用信息</h2>
-             <div class="mb-4">
-                <label for="fixed_app_subtype" class="block text-sm font-medium text-gray-700">固网应用品类:</label>
+             <div class="mb-4 input-group">
+                <label for="fixed_app_subtype">固网应用品类:</label>
                 <select id="fixed_app_subtype" name="fixed_app_subtype" class="select-field">
                     <option value="other_fixed">语音固话、语音增值(不含BPO/云讯通)、宽带增值等</option>
                     <option value="yunxuntong">语音增值-云讯通</option>
@@ -330,12 +372,12 @@
                  <div id="fa_formula_display" class="formula-display"></div>
             </div>
              <div id="fa_common_inputs" class="sub-section">
-                  <div class="mb-4">
-                     <label for="fa_revenue" class="block text-sm font-medium text-gray-700">年准财收入 (元):</label>
+                  <div class="mb-4 input-group">
+                     <label for="fa_revenue">年准财收入 (元):</label>
                      <input type="number" id="fa_revenue" name="fa_revenue" placeholder="输入年度总收入" class="input-field">
                  </div>
-                 <div id="fa_cost_input" class="mb-4 hidden-section">
-                     <label for="fa_cost" class="block text-sm font-medium text-gray-700">年成本 (元):</label>
+                 <div id="fa_cost_input" class="mb-4 hidden-section input-group">
+                     <label for="fa_cost">年成本 (元):</label>
                      <input type="number" id="fa_cost" name="fa_cost" placeholder="输入年度总成本" class="input-field">
                  </div>
              </div>
@@ -346,32 +388,95 @@
             <div class="notes-display mb-4">
                 说明：按回款计算积分。单项目总积分上限6万，单月单项目积分上限5千。
             </div>
-            <div class="mb-4">
-                <label for="ict_amount_received" class="block text-sm font-medium text-gray-700">项目已回款金额累计值 (元):</label>
+            <div class="mb-4 input-group">
+                <label for="ict_amount_received">项目已回款金额累计值 (元):</label>
                 <input type="number" id="ict_amount_received" name="ict_amount_received" placeholder="输入项目累计已回款总额" class="input-field">
             </div>
-             <div class="mb-4">
-                <label for="ict_gross_margin_rate" class="block text-sm font-medium text-gray-700">项目总累计毛利率 (%):</label>
+             <div class="mb-4 input-group">
+                <label for="ict_gross_margin_rate">项目总累计毛利率 (%):</label>
                 <input type="number" id="ict_gross_margin_rate" name="ict_gross_margin_rate" placeholder="例如: 15 (表示15%)" class="input-field">
             </div>
-             <div class="mb-4">
-                <label for="ict_total_revenue" class="block text-sm font-medium text-gray-700">项目收入总额 (元):</label>
+             <div class="mb-4 input-group">
+                <label for="ict_total_revenue">项目收入总额 (元):</label>
                 <input type="number" id="ict_total_revenue" name="ict_total_revenue" placeholder="用于判断利润系数规则 (500万阈值)" class="input-field">
             </div>
-             <div class="mb-4">
-                <label for="ict_dev_contribution_ratio" class="block text-sm font-medium text-gray-700">发展人贡献比 (%):</label>
+             <div class="mb-4 input-group">
+                <label for="ict_dev_contribution_ratio">发展人贡献比 (%):</label>
                 <input type="number" id="ict_dev_contribution_ratio" name="ict_dev_contribution_ratio" placeholder="例如: 100 (表示100%)" class="input-field">
             </div>
-            <div class="mb-4">
-                <label for="ict_historical_points" class="block text-sm font-medium text-gray-700">项目历史已累计发放积分:</label>
+            <div class="mb-4 input-group">
+                <label for="ict_historical_points">项目历史已累计发放积分:</label>
                 <input type="number" id="ict_historical_points" name="ict_historical_points" placeholder="输入该项目此前已发放积分总和" class="input-field">
             </div>
+        </div>
+
+        <div id="iot_section" class="hidden-section mb-4">
+            <h2 class="section-title">物联网标品信息</h2>
+            <div class="mb-4 input-group">
+                <label for="iot_subtype">物联网标品品类:</label>
+                <select id="iot_subtype" name="iot_subtype" class="select-field">
+                    <option value="provincial_app">应用产品-省内</option>
+                    <option value="group_app">（部件+应用产品）-集团</option>
+                    <option value="connection">连接产品-普通连接类</option>
+                </select>
+                <div id="iot_formula_display" class="formula-display"></div>
+            </div>
+             <div id="iot_app_inputs" class="sub-section hidden-section">
+                <div class="mb-4 input-group">
+                    <label for="iot_sales_amount">销售金额 (元):</label>
+                    <input type="number" id="iot_sales_amount" name="iot_sales_amount" placeholder="输入销售金额" class="input-field">
+                </div>
+                <div class="mb-4 input-group">
+                    <label for="iot_cost_amount">成本金额 (元):</label>
+                    <input type="number" id="iot_cost_amount" name="iot_cost_amount" placeholder="输入成本金额" class="input-field">
+                </div>
+                 <div id="iot_key_product_section" class="mb-4 hidden-section input-group">
+                    <span class="block text-sm font-medium text-gray-700">是否重点产品:</span>
+                     <div class="checkbox-group">
+                        <input type="checkbox" id="iot_is_key_product" name="iot_is_key_product" value="1.2" class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded">
+                        <label for="iot_is_key_product" class="checkbox-label">是 (系数 1.2)</label>
+                     </div>
+                </div>
+            </div>
+            <div id="iot_connection_inputs" class="sub-section hidden-section">
+                 <div class="mb-4 input-group">
+                    <label for="iot_revenue">准财收入 (元):</label>
+                    <input type="number" id="iot_revenue" name="iot_revenue" placeholder="输入准财收入" class="input-field">
+                 </div>
+                 <div class="notes-display">
+                    剔除大流量、设备卡账户
+                 </div>
+            </div>
+        </div>
+
+        <div id="idc_etc_section" class="hidden-section mb-4">
+             <h2 class="section-title">IDC/跨境云专线/BPO信息</h2>
+             <div class="mb-4 input-group">
+                <label for="idc_revenue">准财收入 (元):</label>
+                <input type="number" id="idc_revenue" name="idc_revenue" placeholder="输入准财收入" class="input-field">
+             </div>
+             <div id="idc_formula_display" class="formula-display">
+                 积分标准：准财收入 × 10% × 5% (计12个月)
+             </div>
+             <div class="notes-display mt-2">
+                 说明：IDC单项目6万积分封顶，单月单项目5000积分封顶。<br>
+                 跨境云专线 (LVL6: 010205030102), BPO (LVL6: 010202060101)
+             </div>
         </div>
 
 
         <button id="calculateBtn" class="calculate-button">计算积分</button>
 
         <div id="result" class="mt-6"></div>
+
+        <div id="accumulation_section" class="hidden-section">
+             <h2 class="section-title">积分累计</h2>
+             <ul id="accumulation_list"></ul>
+             <div id="accumulation_total" class="text-lg font-semibold text-gray-800 mb-3">
+                 累计总积分: 0.000
+             </div>
+             <button id="clear_accumulation_btn" class="clear-button">清空累计</button>
+        </div>
 
     </div>
 
@@ -383,7 +488,13 @@
         const convergenceSection = document.getElementById('convergence_section');
         const dualLineSection = document.getElementById('dual_line_section');
         const fixedAppSection = document.getElementById('fixed_app_section');
-        const ictSection = document.getElementById('ict_section'); // ICT Section
+        const ictSection = document.getElementById('ict_section');
+        const iotSection = document.getElementById('iot_section');
+        const idcEtcSection = document.getElementById('idc_etc_section');
+        const accumulationSection = document.getElementById('accumulation_section');
+        const accumulationList = document.getElementById('accumulation_list');
+        const accumulationTotal = document.getElementById('accumulation_total');
+        const clearAccumulationBtn = document.getElementById('clear_accumulation_btn');
 
         const broadbandTypeRadios = document.querySelectorAll('input[name="broadband_type"]');
         const nonAnnualSection = document.getElementById('non_annual_section');
@@ -410,6 +521,21 @@
         const ictDevContributionRatioInput = document.getElementById('ict_dev_contribution_ratio');
         const ictHistoricalPointsInput = document.getElementById('ict_historical_points');
 
+        // IoT Elements
+        const iotSubtypeSelect = document.getElementById('iot_subtype');
+        const iotAppInputs = document.getElementById('iot_app_inputs');
+        const iotConnectionInputs = document.getElementById('iot_connection_inputs');
+        const iotSalesAmountInput = document.getElementById('iot_sales_amount');
+        const iotCostAmountInput = document.getElementById('iot_cost_amount');
+        const iotRevenueInput = document.getElementById('iot_revenue');
+        const iotKeyProductSection = document.getElementById('iot_key_product_section');
+        const iotIsKeyProductCheckbox = document.getElementById('iot_is_key_product');
+        const iotFormulaDisplay = document.getElementById('iot_formula_display');
+
+        // IDC/Etc Elements
+        const idcRevenueInput = document.getElementById('idc_revenue');
+        const idcFormulaDisplay = document.getElementById('idc_formula_display');
+
 
         const mobilePriceInput = document.getElementById('mobile_price');
         const monthlyContributionInput = document.getElementById('monthly_contribution');
@@ -418,6 +544,10 @@
 
         const calculateBtn = document.getElementById('calculateBtn');
         const resultDiv = document.getElementById('result');
+
+        // --- State Variables ---
+        let accumulatedPoints = []; // Array to store { description, score } objects
+        let currentCalculationResult = { description: '', score: 0, valid: false }; // Temp store for last calculation
 
         // --- Constants ---
         const defaultCardTypeCoefficient = 0.8;
@@ -431,6 +561,11 @@
         const ICT_REVENUE_THRESHOLD = 5000000;
         const ICT_MARGIN_THRESHOLD_LOW = 10; // 10%
         const ICT_MARGIN_THRESHOLD_HIGH = 15; // 15%
+        const IOT_BASE_COEFF = 0.20; // 20%
+        const IOT_CONNECTION_REVENUE_COEFF = 0.5;
+        const IDC_ETC_COEFF_1 = 0.10; // 10%
+        const IDC_ETC_COEFF_2 = 0.05; // 5%
+        const IOT_KEY_PRODUCT_COEFF = 1.2; // Assumed coefficient for key product
 
 
         // --- Helper Functions ---
@@ -440,12 +575,15 @@
             convergenceSection.classList.add('hidden-section');
             dualLineSection.classList.add('hidden-section');
             fixedAppSection.classList.add('hidden-section');
-            ictSection.classList.add('hidden-section'); // Hide ICT section
+            ictSection.classList.add('hidden-section');
+            iotSection.classList.add('hidden-section');
+            idcEtcSection.classList.add('hidden-section');
         }
 
         function clearResult() {
             resultDiv.innerHTML = '';
             resultDiv.className = 'mt-6';
+            currentCalculationResult = { description: '', score: 0, valid: false }; // Clear temp result
         }
 
         // Function to update formula display text
@@ -480,8 +618,53 @@
                          formulaText = '积分标准：毛利额 × 0.085 (毛利额=准财收入-成本, 按12个月计算)';
                         break;
                  }
+            } else if (selectElement.id === 'iot_subtype') { // IoT Formulas
+                 switch (selectedValue) {
+                    case 'provincial_app':
+                        formulaText = '积分标准：毛利额 × 20% × 重点产品系数 (计1个月)';
+                        break;
+                    case 'group_app':
+                        formulaText = '积分标准：毛利额 × 20% (计1个月)';
+                        break;
+                    case 'connection':
+                        formulaText = '积分标准：准财收入 × 0.5 × 20% (计12个月)';
+                        break;
+                 }
             }
-            displayElement.textContent = formulaText;
+            // IDC/Etc formula is static, handled in HTML
+            if(displayElement) displayElement.textContent = formulaText;
+        }
+
+        // Function to update the accumulation list and total display
+        function updateAccumulationDisplay() {
+            accumulationList.innerHTML = ''; // Clear current list
+            let total = 0;
+            accumulatedPoints.forEach(item => {
+                const li = document.createElement('li');
+                li.textContent = `${item.description}: ${item.score.toFixed(3)}`;
+                accumulationList.appendChild(li);
+                total += item.score;
+            });
+            accumulationTotal.textContent = `累计总积分: ${total.toFixed(3)}`;
+            // Show the accumulation section if there are items
+            if (accumulatedPoints.length > 0) {
+                accumulationSection.classList.remove('hidden-section');
+            } else {
+                 accumulationSection.classList.add('hidden-section');
+            }
+        }
+
+        // Function to add the current result to the accumulation
+        function addToAccumulation() {
+            if (currentCalculationResult.valid) {
+                 accumulatedPoints.push({
+                    description: currentCalculationResult.description,
+                    score: currentCalculationResult.score
+                 });
+                 updateAccumulationDisplay();
+                 // Clear the main result area after adding
+                 clearResult();
+            }
         }
 
 
@@ -491,7 +674,7 @@
         calcTypeRadios.forEach(radio => {
             radio.addEventListener('change', function() {
                 hideAllSections();
-                clearResult();
+                clearResult(); // Clear result when changing main type
 
                 switch(this.value) {
                     case 'mobile':
@@ -512,8 +695,15 @@
                         fixedAppSection.classList.remove('hidden-section');
                         fixedAppSubtypeSelect.dispatchEvent(new Event('change'));
                         break;
-                    case 'ict': // Handle ICT selection
+                    case 'ict':
                         ictSection.classList.remove('hidden-section');
+                        break;
+                    case 'iot':
+                        iotSection.classList.remove('hidden-section');
+                        iotSubtypeSelect.dispatchEvent(new Event('change'));
+                        break;
+                     case 'idc_etc':
+                        idcEtcSection.classList.remove('hidden-section');
                         break;
                 }
             });
@@ -555,222 +745,303 @@
              updateFormulaDisplay(this, faFormulaDisplay);
          });
 
+         // Listener for IoT Sub-Type Change
+         iotSubtypeSelect.addEventListener('change', function() {
+             clearResult();
+             const selectedValue = this.value;
+             iotAppInputs.classList.add('hidden-section');
+             iotConnectionInputs.classList.add('hidden-section');
+             iotKeyProductSection.classList.add('hidden-section');
+
+             if (selectedValue === 'provincial_app' || selectedValue === 'group_app') {
+                 iotAppInputs.classList.remove('hidden-section');
+                 if (selectedValue === 'provincial_app') {
+                     iotKeyProductSection.classList.remove('hidden-section');
+                 }
+             } else if (selectedValue === 'connection') {
+                 iotConnectionInputs.classList.remove('hidden-section');
+             }
+             updateFormulaDisplay(this, iotFormulaDisplay);
+         });
 
         // Listener for Calculate Button
         calculateBtn.addEventListener('click', () => {
-            clearResult();
+            clearResult(); // Clear previous result display first
 
             const selectedCalcType = document.querySelector('input[name="calc_type"]:checked').value;
-            let finalScore = 0; // Represents the final points for the month for ICT
+            let finalScore = 0;
             let detailsHtml = '';
             let calculationFactors = {};
+            let isValidCalculation = false; // Flag to check if calculation succeeded
 
             try {
                 switch(selectedCalcType) {
                     case 'mobile':
-                        const price = parseFloat(mobilePriceInput.value);
-                        if (isNaN(price) || price <= 0) throw new Error('请输入有效的套餐月租！');
-                        const networkTypeCoefficient = parseFloat(document.querySelector('input[name="network_type_mobile"]:checked').value);
-                        const cardTypeCoefficient = defaultCardTypeCoefficient;
-                        const bizCertCoefficientMobile = parseFloat(document.querySelector('input[name="biz_cert_mobile"]:checked').value);
-                        let priceCoefficient;
-                        if (price >= 99) priceCoefficient = 1.2;
-                        else if (price >= 39) priceCoefficient = 0.8;
-                        else priceCoefficient = 0.25;
-                        finalScore = price * priceCoefficient * networkTypeCoefficient * cardTypeCoefficient * bizCertCoefficientMobile;
-                        calculationFactors = {
-                            '计算类型': '手机套餐', '月租': `${price.toFixed(2)} 元`, '价格系数': priceCoefficient.toFixed(2),
-                            '本网异网系数': networkTypeCoefficient.toFixed(2), '卡类型系数': `${cardTypeCoefficient.toFixed(2)} (默认单卡)`,
-                            '企业证件系数': bizCertCoefficientMobile.toFixed(2)
-                        };
+                        { // Block scope for const/let
+                            const price = parseFloat(mobilePriceInput.value);
+                            if (isNaN(price) || price <= 0) throw new Error('请输入有效的套餐月租！');
+                            const networkTypeCoefficient = parseFloat(document.querySelector('input[name="network_type_mobile"]:checked').value);
+                            const cardTypeCoefficient = defaultCardTypeCoefficient;
+                            const bizCertCoefficientMobile = parseFloat(document.querySelector('input[name="biz_cert_mobile"]:checked').value);
+                            let priceCoefficient;
+                            if (price >= 99) priceCoefficient = 1.2;
+                            else if (price >= 39) priceCoefficient = 0.8;
+                            else priceCoefficient = 0.25;
+                            finalScore = price * priceCoefficient * networkTypeCoefficient * cardTypeCoefficient * bizCertCoefficientMobile;
+                            calculationFactors = {
+                                '计算类型': '手机套餐', '月租': `${price.toFixed(2)} 元`, '价格系数': priceCoefficient.toFixed(2),
+                                '本网异网系数': networkTypeCoefficient.toFixed(2), '卡类型系数': `${cardTypeCoefficient.toFixed(2)} (默认单卡)`,
+                                '企业证件系数': bizCertCoefficientMobile.toFixed(2)
+                            };
+                            isValidCalculation = true;
+                        }
                         break;
 
                     case 'broadband':
-                        const selectedBroadbandType = document.querySelector('input[name="broadband_type"]:checked').value;
-                        if (selectedBroadbandType === 'non_annual') {
-                            const monthlyContribution = parseFloat(monthlyContributionInput.value);
-                            if (isNaN(monthlyContribution) || monthlyContribution <= 0) throw new Error('请输入有效的月费贡献金额！');
-                            // Re-added base coefficient 0.8 for non-annual broadband
-                            const baseCoefficientBB = 0.8;
-                            const contributionCoefficient = monthlyContribution >= 30 ? 1.0 : 0.3;
-                            const listCoefficient = parseFloat(document.querySelector('input[name="list_status_non_annual"]:checked').value);
-                            const fttoCoefficient = parseFloat(document.querySelector('input[name="ftto_non_annual"]:checked').value);
-                            // Updated calculation to include baseCoefficientBB
-                            finalScore = monthlyContribution * baseCoefficientBB * contributionCoefficient * listCoefficient * fttoCoefficient;
-                            calculationFactors = {
-                                '计算类型': '单宽 (新入网非包年)', '月费贡献金额': `${monthlyContribution.toFixed(2)} 元`,
-                                '基础系数': baseCoefficientBB.toFixed(2), // Added back for display
-                                '贡献值系数': `${contributionCoefficient.toFixed(2)} (${monthlyContribution >= 30 ? '≥ 30元' : '< 30元'})`,
-                                '名单系数': listCoefficient.toFixed(2), 'FTTO系数': fttoCoefficient.toFixed(2)
-                            };
-                        } else { // annual
-                            const annualPayment = parseFloat(annualPaymentInput.value);
-                            if (isNaN(annualPayment) || annualPayment <= 0) throw new Error('请输入有效的年费趸交款！');
-                            const baseCoefficient = 0.2;
-                            const durationCoefficient = parseFloat(document.querySelector('input[name="lump_sum_duration"]:checked').value);
-                            const listCoefficient = parseFloat(document.querySelector('input[name="list_status_annual"]:checked').value);
-                            const fttoCoefficient = parseFloat(document.querySelector('input[name="ftto_annual"]:checked').value);
-                            finalScore = annualPayment * baseCoefficient * durationCoefficient * listCoefficient * fttoCoefficient;
-                            calculationFactors = {
-                                '计算类型': '单宽 (新入网包年)', '年费趸交款': `${annualPayment.toFixed(2)} 元`, '基础系数': baseCoefficient.toFixed(2),
-                                '年限系数': `${durationCoefficient.toFixed(2)} (${durationCoefficient === 1.0 ? '1年' : '≥ 2年'})`,
-                                '名单系数': listCoefficient.toFixed(2), 'FTTO系数': fttoCoefficient.toFixed(2)
-                            };
+                         { // Block scope
+                            const selectedBroadbandType = document.querySelector('input[name="broadband_type"]:checked').value;
+                            if (selectedBroadbandType === 'non_annual') {
+                                const monthlyContribution = parseFloat(monthlyContributionInput.value);
+                                if (isNaN(monthlyContribution) || monthlyContribution <= 0) throw new Error('请输入有效的月费贡献金额！');
+                                const baseCoefficientBB = 0.8;
+                                const contributionCoefficient = monthlyContribution >= 30 ? 1.0 : 0.3;
+                                const listCoefficient = parseFloat(document.querySelector('input[name="list_status_non_annual"]:checked').value);
+                                const fttoCoefficient = parseFloat(document.querySelector('input[name="ftto_non_annual"]:checked').value);
+                                finalScore = monthlyContribution * baseCoefficientBB * contributionCoefficient * listCoefficient * fttoCoefficient;
+                                calculationFactors = {
+                                    '计算类型': '单宽 (新入网非包年)', '月费贡献金额': `${monthlyContribution.toFixed(2)} 元`,
+                                    '基础系数': baseCoefficientBB.toFixed(2),
+                                    '贡献值系数': `${contributionCoefficient.toFixed(2)} (${monthlyContribution >= 30 ? '≥ 30元' : '< 30元'})`,
+                                    '名单系数': listCoefficient.toFixed(2), 'FTTO系数': fttoCoefficient.toFixed(2)
+                                };
+                            } else { // annual
+                                const annualPayment = parseFloat(annualPaymentInput.value);
+                                if (isNaN(annualPayment) || annualPayment <= 0) throw new Error('请输入有效的年费趸交款！');
+                                const baseCoefficient = 0.2;
+                                const durationCoefficient = parseFloat(document.querySelector('input[name="lump_sum_duration"]:checked').value);
+                                const listCoefficient = parseFloat(document.querySelector('input[name="list_status_annual"]:checked').value);
+                                const fttoCoefficient = parseFloat(document.querySelector('input[name="ftto_annual"]:checked').value);
+                                finalScore = annualPayment * baseCoefficient * durationCoefficient * listCoefficient * fttoCoefficient;
+                                calculationFactors = {
+                                    '计算类型': '单宽 (新入网包年)', '年费趸交款': `${annualPayment.toFixed(2)} 元`, '基础系数': baseCoefficient.toFixed(2),
+                                    '年限系数': `${durationCoefficient.toFixed(2)} (${durationCoefficient === 1.0 ? '1年' : '≥ 2年'})`,
+                                    '名单系数': listCoefficient.toFixed(2), 'FTTO系数': fttoCoefficient.toFixed(2)
+                                };
+                            }
+                             isValidCalculation = true;
                         }
                         break;
 
                     case 'convergence':
-                         const contribution = parseFloat(convergenceContributionInput.value);
-                         if (isNaN(contribution) || contribution <= 0) throw new Error('请输入有效的入网套餐值贡献金额！');
-                         const networkCoefficientConv = parseFloat(document.querySelector('input[name="network_type_convergence"]:checked').value);
-                         const listCoefficientConv = parseFloat(document.querySelector('input[name="list_status_convergence"]:checked').value);
-                         const bizCertCoefficientConv = parseFloat(document.querySelector('input[name="biz_cert_convergence"]:checked').value);
-                         const woqiCoefficient = parseFloat(document.querySelector('input[name="woqi"]:checked').value);
-                         let contributionValueCoefficient;
-                         let contributionRangeText;
-                         if (contribution >= 99) { contributionValueCoefficient = 1.2; contributionRangeText = '≥ 99元'; }
-                         else if (contribution >= 39) { contributionValueCoefficient = 0.8; contributionRangeText = '39-98元'; }
-                         else { contributionValueCoefficient = 0.25; contributionRangeText = '< 39元'; }
-                         finalScore = contribution * convergenceBaseMultiplier * networkCoefficientConv * contributionValueCoefficient * listCoefficientConv * bizCertCoefficientConv * woqiCoefficient;
-                         calculationFactors = {
-                             '计算类型': '移宽融合', '入网套餐值贡献金额': `${contribution.toFixed(2)} 元`, '基础乘数': convergenceBaseMultiplier.toFixed(2),
-                             '本网异网系数': networkCoefficientConv.toFixed(2), '贡献值系数': `${contributionValueCoefficient.toFixed(2)} (${contributionRangeText})`,
-                             '名单系数': listCoefficientConv.toFixed(2), '企业证件系数': bizCertCoefficientConv.toFixed(2), '沃企融合系数': woqiCoefficient.toFixed(2)
-                         };
+                         { // Block scope
+                            const contribution = parseFloat(convergenceContributionInput.value);
+                            if (isNaN(contribution) || contribution <= 0) throw new Error('请输入有效的入网套餐值贡献金额！');
+                            const networkCoefficientConv = parseFloat(document.querySelector('input[name="network_type_convergence"]:checked').value);
+                            const listCoefficientConv = parseFloat(document.querySelector('input[name="list_status_convergence"]:checked').value);
+                            const bizCertCoefficientConv = parseFloat(document.querySelector('input[name="biz_cert_convergence"]:checked').value);
+                            const woqiCoefficient = parseFloat(document.querySelector('input[name="woqi"]:checked').value);
+                            let contributionValueCoefficient;
+                            let contributionRangeText;
+                            if (contribution >= 99) { contributionValueCoefficient = 1.2; contributionRangeText = '≥ 99元'; }
+                            else if (contribution >= 39) { contributionValueCoefficient = 0.8; contributionRangeText = '39-98元'; }
+                            else { contributionValueCoefficient = 0.25; contributionRangeText = '< 39元'; }
+                            finalScore = contribution * convergenceBaseMultiplier * networkCoefficientConv * contributionValueCoefficient * listCoefficientConv * bizCertCoefficientConv * woqiCoefficient;
+                            calculationFactors = {
+                                '计算类型': '移宽融合', '入网套餐值贡献金额': `${contribution.toFixed(2)} 元`, '基础乘数': convergenceBaseMultiplier.toFixed(2),
+                                '本网异网系数': networkCoefficientConv.toFixed(2), '贡献值系数': `${contributionValueCoefficient.toFixed(2)} (${contributionRangeText})`,
+                                '名单系数': listCoefficientConv.toFixed(2), '企业证件系数': bizCertCoefficientConv.toFixed(2), '沃企融合系数': woqiCoefficient.toFixed(2)
+                            };
+                             isValidCalculation = true;
+                        }
                         break;
 
                     case 'dual_line':
-                        const selectedDualLineType = dualLineSubtypeSelect.value;
-                        const dlRevenue = parseFloat(dlRevenueInput.value);
-                        if (isNaN(dlRevenue) || dlRevenue < 0) throw new Error('请输入有效的年准财收入！');
-                        const dlListCoefficient = parseFloat(document.querySelector('input[name="list_status_dl"]:checked').value);
-                        let dlCost = 0;
-                        let profit = dlRevenue;
-                        const selectedDlOptionText = dualLineSubtypeSelect.options[dualLineSubtypeSelect.selectedIndex].text;
+                         { // Block scope
+                            const selectedDualLineType = dualLineSubtypeSelect.value;
+                            const dlRevenue = parseFloat(dlRevenueInput.value);
+                            if (isNaN(dlRevenue) || dlRevenue < 0) throw new Error('请输入有效的年准财收入！');
+                            const dlListCoefficient = parseFloat(document.querySelector('input[name="list_status_dl"]:checked').value);
+                            let dlCost = 0;
+                            let profit = dlRevenue;
+                            const selectedDlOptionText = dualLineSubtypeSelect.options[dualLineSubtypeSelect.selectedIndex].text;
 
-                        calculationFactors = {
-                            '计算类型': `双线`,
-                            '品类': selectedDlOptionText,
-                            '年准财收入': `${dlRevenue.toFixed(2)} 元`,
-                        };
+                            calculationFactors = {
+                                '计算类型': `双线`,
+                                '品类': selectedDlOptionText,
+                                '年准财收入': `${dlRevenue.toFixed(2)} 元`,
+                            };
 
-                        if (selectedDualLineType === 'international') {
-                            dlCost = parseFloat(dlCostInput.value);
-                            if (isNaN(dlCost) || dlCost < 0) throw new Error('请输入有效的年结入成本！');
-                            profit = dlRevenue - dlCost;
-                            calculationFactors['年结入成本'] = `${dlCost.toFixed(2)} 元`;
-                            calculationFactors['毛利额'] = `${profit.toFixed(2)} 元`;
-                            finalScore = profit * BASE_COEFF_085 * dlListCoefficient;
-                            calculationFactors['基础系数'] = BASE_COEFF_085.toFixed(3);
-                        } else if (selectedDualLineType === 'internet_non_annual') {
-                            finalScore = dlRevenue * BASE_COEFF_085 * dlListCoefficient;
-                             calculationFactors['基础系数'] = BASE_COEFF_085.toFixed(3);
-                        } else if (selectedDualLineType === 'internet_annual') {
-                            finalScore = dlRevenue * INTERNET_ANNUAL_COEFF * dlListCoefficient;
-                             calculationFactors['基础系数'] = INTERNET_ANNUAL_COEFF.toFixed(3);
-                        } else if (selectedDualLineType === 'traditional_cloud') {
-                            finalScore = dlRevenue * BASE_COEFF_085 * dlListCoefficient;
-                             calculationFactors['基础系数'] = BASE_COEFF_085.toFixed(3);
-                        } else if (selectedDualLineType === 'dark_fiber') {
-                            finalScore = dlRevenue * BASE_COEFF_085 * DARK_FIBER_COEFF * dlListCoefficient;
-                            calculationFactors['基础系数'] = BASE_COEFF_085.toFixed(3);
-                            calculationFactors['光纤/管道系数'] = DARK_FIBER_COEFF.toFixed(2);
+                            if (selectedDualLineType === 'international') {
+                                dlCost = parseFloat(dlCostInput.value);
+                                if (isNaN(dlCost) || dlCost < 0) throw new Error('请输入有效的年结入成本！');
+                                profit = dlRevenue - dlCost;
+                                calculationFactors['年结入成本'] = `${dlCost.toFixed(2)} 元`;
+                                calculationFactors['毛利额'] = `${profit.toFixed(2)} 元`;
+                                finalScore = profit * BASE_COEFF_085 * dlListCoefficient;
+                                calculationFactors['基础系数'] = BASE_COEFF_085.toFixed(3);
+                            } else if (selectedDualLineType === 'internet_non_annual') {
+                                finalScore = dlRevenue * BASE_COEFF_085 * dlListCoefficient;
+                                calculationFactors['基础系数'] = BASE_COEFF_085.toFixed(3);
+                            } else if (selectedDualLineType === 'internet_annual') {
+                                finalScore = dlRevenue * INTERNET_ANNUAL_COEFF * dlListCoefficient;
+                                calculationFactors['基础系数'] = INTERNET_ANNUAL_COEFF.toFixed(3);
+                            } else if (selectedDualLineType === 'traditional_cloud') {
+                                finalScore = dlRevenue * BASE_COEFF_085 * dlListCoefficient;
+                                calculationFactors['基础系数'] = BASE_COEFF_085.toFixed(3);
+                            } else if (selectedDualLineType === 'dark_fiber') {
+                                finalScore = dlRevenue * BASE_COEFF_085 * DARK_FIBER_COEFF * dlListCoefficient;
+                                calculationFactors['基础系数'] = BASE_COEFF_085.toFixed(3);
+                                calculationFactors['光纤/管道系数'] = DARK_FIBER_COEFF.toFixed(2);
+                            }
+                            calculationFactors['名单系数'] = dlListCoefficient.toFixed(2);
+                             isValidCalculation = true;
                         }
-                        calculationFactors['名单系数'] = dlListCoefficient.toFixed(2);
                         break;
 
                     case 'fixed_app':
-                        const selectedFixedAppType = fixedAppSubtypeSelect.value;
-                        const faRevenue = parseFloat(faRevenueInput.value);
-                         if (isNaN(faRevenue) || faRevenue < 0) throw new Error('请输入有效的年准财收入！');
-                        let faCost = 0;
-                        let faProfit = faRevenue;
-                        const selectedFaOptionText = fixedAppSubtypeSelect.options[fixedAppSubtypeSelect.selectedIndex].text;
+                        { // Block scope
+                            const selectedFixedAppType = fixedAppSubtypeSelect.value;
+                            const faRevenue = parseFloat(faRevenueInput.value);
+                            if (isNaN(faRevenue) || faRevenue < 0) throw new Error('请输入有效的年准财收入！');
+                            let faCost = 0;
+                            let faProfit = faRevenue;
+                            const selectedFaOptionText = fixedAppSubtypeSelect.options[fixedAppSubtypeSelect.selectedIndex].text;
 
-                         calculationFactors = {
-                            '计算类型': `固网应用`,
-                            '品类': selectedFaOptionText,
-                            '年准财收入': `${faRevenue.toFixed(2)} 元`,
-                         };
+                            calculationFactors = {
+                                '计算类型': `固网应用`,
+                                '品类': selectedFaOptionText,
+                                '年准财收入': `${faRevenue.toFixed(2)} 元`,
+                            };
 
-                        if (selectedFixedAppType === 'yunxuntong') {
-                            faCost = parseFloat(faCostInput.value);
-                             if (isNaN(faCost) || faCost < 0) throw new Error('请输入有效的年成本！');
-                            faProfit = faRevenue - faCost;
-                            calculationFactors['年成本'] = `${faCost.toFixed(2)} 元`;
-                            calculationFactors['毛利额'] = `${faProfit.toFixed(2)} 元`;
-                            finalScore = faProfit * BASE_COEFF_085;
-                        } else { // other_fixed
-                            finalScore = faRevenue * BASE_COEFF_085;
+                            if (selectedFixedAppType === 'yunxuntong') {
+                                faCost = parseFloat(faCostInput.value);
+                                if (isNaN(faCost) || faCost < 0) throw new Error('请输入有效的年成本！');
+                                faProfit = faRevenue - faCost;
+                                calculationFactors['年成本'] = `${faCost.toFixed(2)} 元`;
+                                calculationFactors['毛利额'] = `${faProfit.toFixed(2)} 元`;
+                                finalScore = faProfit * BASE_COEFF_085;
+                            } else { // other_fixed
+                                finalScore = faRevenue * BASE_COEFF_085;
+                            }
+                            calculationFactors['基础系数'] = BASE_COEFF_085.toFixed(3);
+                             isValidCalculation = true;
                         }
-                         calculationFactors['基础系数'] = BASE_COEFF_085.toFixed(3);
                         break;
 
-                    case 'ict': // ICT Project Calculation
-                        const amountReceived = parseFloat(ictAmountReceivedInput.value);
-                        const grossMarginRate = parseFloat(ictGrossMarginRateInput.value); // Input as percentage e.g., 15
-                        const totalRevenue = parseFloat(ictTotalRevenueInput.value);
-                        const devContributionRatio = parseFloat(ictDevContributionRatioInput.value); // Input as percentage e.g., 100
-                        const historicalPoints = parseFloat(ictHistoricalPointsInput.value);
+                    case 'ict':
+                        { // Block scope
+                            const amountReceived = parseFloat(ictAmountReceivedInput.value);
+                            const grossMarginRate = parseFloat(ictGrossMarginRateInput.value);
+                            const totalRevenue = parseFloat(ictTotalRevenueInput.value);
+                            const devContributionRatio = parseFloat(ictDevContributionRatioInput.value);
+                            const historicalPoints = parseFloat(ictHistoricalPointsInput.value);
 
-                        // Validation
-                        if (isNaN(amountReceived) || amountReceived < 0) throw new Error('请输入有效的项目已回款金额累计值！');
-                        if (isNaN(grossMarginRate)) throw new Error('请输入有效的项目总累计毛利率！'); // Can be negative
-                        if (isNaN(totalRevenue) || totalRevenue < 0) throw new Error('请输入有效的项目收入总额！');
-                        if (isNaN(devContributionRatio) || devContributionRatio < 0 || devContributionRatio > 100) throw new Error('请输入有效的发展人贡献比 (0-100)！');
-                        if (isNaN(historicalPoints) || historicalPoints < 0) throw new Error('请输入有效的项目历史已累计发放积分！');
+                            if (isNaN(amountReceived) || amountReceived < 0) throw new Error('请输入有效的项目已回款金额累计值！');
+                            if (isNaN(grossMarginRate)) throw new Error('请输入有效的项目总累计毛利率！');
+                            if (isNaN(totalRevenue) || totalRevenue < 0) throw new Error('请输入有效的项目收入总额！');
+                            if (isNaN(devContributionRatio) || devContributionRatio < 0 || devContributionRatio > 100) throw new Error('请输入有效的发展人贡献比 (0-100)！');
+                            if (isNaN(historicalPoints) || historicalPoints < 0) throw new Error('请输入有效的项目历史已累计发放积分！');
 
-                        // 1. Calculate Profit Coefficient (利润系数)
-                        let profitCoefficient = 0;
-                        let profitCoefficientDesc = "毛利率≤0";
-                        if (grossMarginRate > 0) {
-                            if (totalRevenue < ICT_REVENUE_THRESHOLD) { // < 5 million
-                                if (grossMarginRate >= ICT_MARGIN_THRESHOLD_HIGH) { // >= 15%
-                                    profitCoefficient = ICT_PROFIT_COEFF_BASE;
-                                    profitCoefficientDesc = `收入<${ICT_REVENUE_THRESHOLD/10000}万, 毛利率≥${ICT_MARGIN_THRESHOLD_HIGH}%`;
-                                } else { // < 15%
-                                    profitCoefficient = ICT_PROFIT_COEFF_BASE * (grossMarginRate / ICT_MARGIN_THRESHOLD_HIGH);
-                                     profitCoefficientDesc = `收入<${ICT_REVENUE_THRESHOLD/10000}万, 毛利率<${ICT_MARGIN_THRESHOLD_HIGH}%`;
-                                }
-                            } else { // >= 5 million
-                                if (grossMarginRate >= ICT_MARGIN_THRESHOLD_LOW) { // >= 10%
-                                     profitCoefficient = ICT_PROFIT_COEFF_BASE;
-                                     profitCoefficientDesc = `收入≥${ICT_REVENUE_THRESHOLD/10000}万, 毛利率≥${ICT_MARGIN_THRESHOLD_LOW}%`;
-                                } else { // < 10%
-                                     profitCoefficient = ICT_PROFIT_COEFF_BASE * (grossMarginRate / ICT_MARGIN_THRESHOLD_LOW);
-                                     profitCoefficientDesc = `收入≥${ICT_REVENUE_THRESHOLD/10000}万, 毛利率<${ICT_MARGIN_THRESHOLD_LOW}%`;
+                            let profitCoefficient = 0;
+                            let profitCoefficientDesc = "毛利率≤0";
+                            if (grossMarginRate > 0) {
+                                if (totalRevenue < ICT_REVENUE_THRESHOLD) {
+                                    if (grossMarginRate >= ICT_MARGIN_THRESHOLD_HIGH) {
+                                        profitCoefficient = ICT_PROFIT_COEFF_BASE;
+                                        profitCoefficientDesc = `收入<${ICT_REVENUE_THRESHOLD/10000}万, 毛利率≥${ICT_MARGIN_THRESHOLD_HIGH}%`;
+                                    } else {
+                                        profitCoefficient = ICT_PROFIT_COEFF_BASE * (grossMarginRate / ICT_MARGIN_THRESHOLD_HIGH);
+                                        profitCoefficientDesc = `收入<${ICT_REVENUE_THRESHOLD/10000}万, 毛利率<${ICT_MARGIN_THRESHOLD_HIGH}%`;
+                                    }
+                                } else {
+                                    if (grossMarginRate >= ICT_MARGIN_THRESHOLD_LOW) {
+                                        profitCoefficient = ICT_PROFIT_COEFF_BASE;
+                                        profitCoefficientDesc = `收入≥${ICT_REVENUE_THRESHOLD/10000}万, 毛利率≥${ICT_MARGIN_THRESHOLD_LOW}%`;
+                                    } else {
+                                        profitCoefficient = ICT_PROFIT_COEFF_BASE * (grossMarginRate / ICT_MARGIN_THRESHOLD_LOW);
+                                        profitCoefficientDesc = `收入≥${ICT_REVENUE_THRESHOLD/10000}万, 毛利率<${ICT_MARGIN_THRESHOLD_LOW}%`;
+                                    }
                                 }
                             }
+
+                            let currentPointsPayableRaw = amountReceived * (grossMarginRate / 100) * profitCoefficient * (devContributionRatio / 100);
+                            currentPointsPayableRaw = Math.max(0, currentPointsPayableRaw);
+                            const currentPointsPayableCapped = Math.min(currentPointsPayableRaw, ICT_TOTAL_POINTS_CAP);
+                            let currentMonthPointsRaw = currentPointsPayableCapped - historicalPoints;
+                            currentMonthPointsRaw = Math.max(0, currentMonthPointsRaw);
+                            finalScore = Math.min(currentMonthPointsRaw, ICT_MONTHLY_POINTS_CAP); // This is the score for the current month
+
+                            calculationFactors = {
+                                '计算类型': 'ICT项目',
+                                '项目已回款金额累计值': `${amountReceived.toFixed(2)} 元`,
+                                '项目总累计毛利率': `${grossMarginRate.toFixed(2)} %`,
+                                '项目收入总额': `${totalRevenue.toFixed(2)} 元`,
+                                '发展人贡献比': `${devContributionRatio.toFixed(2)} %`,
+                                '利润系数': `${profitCoefficient.toFixed(4)} (${profitCoefficientDesc})`,
+                                '项目历史已累计发放积分': `${historicalPoints.toFixed(3)}`,
+                                '--- 计算过程 ---': '',
+                                '当前应发放积分(未封顶)': `${currentPointsPayableRaw.toFixed(3)}`,
+                                '当前应发放积分(上限6万)': `${currentPointsPayableCapped.toFixed(3)}`,
+                                '当月发放积分(未封顶)': `${currentMonthPointsRaw.toFixed(3)}`,
+                                '当月发放积分(上限5千)': `${finalScore.toFixed(3)}`
+                            };
+                             isValidCalculation = true;
                         }
+                        break;
+                     case 'iot':
+                        {
+                            const selectedIotType = iotSubtypeSelect.value;
+                            const iotOptionText = iotSubtypeSelect.options[iotSubtypeSelect.selectedIndex].text;
+                            calculationFactors = { '计算类型': '物联网标品', '品类': iotOptionText };
+                            let iotGrossProfit = 0;
 
-                         // 2. Calculate Current Points Payable (项目当前应发放积分) - Before Cap
-                         let currentPointsPayableRaw = amountReceived * (grossMarginRate / 100) * profitCoefficient * (devContributionRatio / 100);
-                         currentPointsPayableRaw = Math.max(0, currentPointsPayableRaw); // Ensure non-negative
+                            if (selectedIotType === 'provincial_app' || selectedIotType === 'group_app') {
+                                const sales = parseFloat(iotSalesAmountInput.value);
+                                const cost = parseFloat(iotCostAmountInput.value);
+                                if (isNaN(sales) || sales < 0) throw new Error('请输入有效的销售金额！');
+                                if (isNaN(cost) || cost < 0) throw new Error('请输入有效的成本金额！');
+                                iotGrossProfit = sales - cost;
+                                calculationFactors['销售金额'] = `${sales.toFixed(2)} 元`;
+                                calculationFactors['成本金额'] = `${cost.toFixed(2)} 元`;
+                                calculationFactors['毛利额'] = `${iotGrossProfit.toFixed(2)} 元`;
+                                calculationFactors['基础系数'] = `${(IOT_BASE_COEFF * 100).toFixed(0)}%`;
 
-                         // 3. Apply Total Project Cap (60,000)
-                         const currentPointsPayableCapped = Math.min(currentPointsPayableRaw, ICT_TOTAL_POINTS_CAP);
-
-                         // 4. Calculate Current Month Points (当月项目发放积分) - Before Cap
-                         let currentMonthPointsRaw = currentPointsPayableCapped - historicalPoints;
-                         currentMonthPointsRaw = Math.max(0, currentMonthPointsRaw); // Ensure non-negative
-
-                         // 5. Apply Monthly Cap (5,000)
-                         finalScore = Math.min(currentMonthPointsRaw, ICT_MONTHLY_POINTS_CAP);
-
-                         calculationFactors = {
-                            '计算类型': 'ICT项目',
-                            '项目已回款金额累计值': `${amountReceived.toFixed(2)} 元`,
-                            '项目总累计毛利率': `${grossMarginRate.toFixed(2)} %`,
-                            '项目收入总额': `${totalRevenue.toFixed(2)} 元`,
-                            '发展人贡献比': `${devContributionRatio.toFixed(2)} %`,
-                            '利润系数': `${profitCoefficient.toFixed(4)} (${profitCoefficientDesc})`,
-                            '项目历史已累计发放积分': `${historicalPoints.toFixed(3)}`,
-                            '--- 计算过程 ---': '', // Separator
-                            '当前应发放积分(未封顶)': `${currentPointsPayableRaw.toFixed(3)}`,
-                            '当前应发放积分(上限6万)': `${currentPointsPayableCapped.toFixed(3)}`,
-                            '当月发放积分(未封顶)': `${currentMonthPointsRaw.toFixed(3)}`,
-                            '当月发放积分(上限5千)': `${finalScore.toFixed(3)}` // Final score is here
-                         };
+                                if (selectedIotType === 'provincial_app') {
+                                    const isKeyProduct = iotIsKeyProductCheckbox.checked;
+                                    const keyProductCoeff = isKeyProduct ? IOT_KEY_PRODUCT_COEFF : 1.0;
+                                    finalScore = iotGrossProfit * IOT_BASE_COEFF * keyProductCoeff;
+                                    calculationFactors['重点产品系数'] = `${keyProductCoeff.toFixed(1)} (${isKeyProduct ? '是' : '否'})`;
+                                } else { // group_app
+                                    finalScore = iotGrossProfit * IOT_BASE_COEFF;
+                                }
+                                calculationFactors['计算周期'] = '1个月';
+                            } else { // connection
+                                const revenue = parseFloat(iotRevenueInput.value);
+                                if (isNaN(revenue) || revenue < 0) throw new Error('请输入有效的准财收入！');
+                                finalScore = revenue * IOT_CONNECTION_REVENUE_COEFF * IOT_BASE_COEFF;
+                                calculationFactors['准财收入'] = `${revenue.toFixed(2)} 元`;
+                                calculationFactors['连接系数'] = IOT_CONNECTION_REVENUE_COEFF.toFixed(1);
+                                calculationFactors['基础系数'] = `${(IOT_BASE_COEFF * 100).toFixed(0)}%`;
+                                calculationFactors['计算周期'] = '12个月';
+                            }
+                             isValidCalculation = true;
+                        }
+                        break;
+                    case 'idc_etc':
+                         {
+                            const revenue = parseFloat(idcRevenueInput.value);
+                            if (isNaN(revenue) || revenue < 0) throw new Error('请输入有效的准财收入！');
+                            finalScore = revenue * IDC_ETC_COEFF_1 * IDC_ETC_COEFF_2;
+                            calculationFactors = {
+                                '计算类型': 'IDC/跨境/BPO',
+                                '准财收入': `${revenue.toFixed(2)} 元`,
+                                '系数1': `${(IDC_ETC_COEFF_1 * 100).toFixed(0)}%`,
+                                '系数2': `${(IDC_ETC_COEFF_2 * 100).toFixed(1)}%`,
+                                '计算周期': '12个月',
+                                '备注': 'IDC有单项目/单月封顶值'
+                            };
+                             isValidCalculation = true;
+                        }
                         break;
 
                      default:
@@ -779,22 +1050,20 @@
 
 
                 // --- Display Result ---
-                if (Object.keys(calculationFactors).length > 0) {
+                if (isValidCalculation) {
                     let resultTitle = calculationFactors['计算类型'];
-                    if(calculationFactors['品类']) { // For Dual Line, Fixed App
+                    if(calculationFactors['品类']) {
                         resultTitle += ` (${calculationFactors['品类']})`
-                    } else if (selectedCalcType === 'broadband') { // For Broadband
-                         // Corrected title generation for broadband
-                         resultTitle = calculationFactors['计算类型']; // Use the title already set in the calculationFactors
+                    } else if (selectedCalcType === 'broadband') {
+                         resultTitle = calculationFactors['计算类型'];
                     }
                     detailsHtml = `<h3 class="text-md font-semibold mb-2 text-blue-900">${resultTitle} - 计算详情:</h3><ul>`;
 
                     for (const [key, value] of Object.entries(calculationFactors)) {
                         if (key !== '计算类型' && key !== '品类') {
-                            // Special handling for separator
                             if (key.startsWith('---')) {
                                  detailsHtml += `<li class="text-sm font-semibold mt-1">${key.replace(/-/g, '')}</li>`;
-                            } else if (key === '当月发放积分(上限5千)') { // Highlight final score
+                            } else if (key === '当月发放积分(上限5千)') {
                                 detailsHtml += `<li class="text-sm font-bold">${key}: ${value}</li>`;
                             }
                              else {
@@ -803,15 +1072,31 @@
                         }
                     }
                     detailsHtml += `</ul><hr class="my-2 border-blue-300">`;
-                    // The final score for display is already calculated and capped above for ICT
-                    // For other types, ensure it's not negative
-                    if (selectedCalcType !== 'ict') {
-                         finalScore = Math.max(0, finalScore);
-                    }
-                    detailsHtml += `<p class="font-bold text-lg text-center">最终计算积分: ${finalScore.toFixed(3)}</p>`; // Use the final capped score
+
+                    finalScore = Math.max(0, finalScore); // Ensure score is non-negative
+
+                    detailsHtml += `<p class="font-bold text-lg text-center">最终计算积分: ${finalScore.toFixed(3)}</p>`;
+
+                    // Store result for potential addition to total
+                    currentCalculationResult = {
+                        description: resultTitle,
+                        score: finalScore,
+                        valid: true
+                    };
+
+                    // Add the "Add to Total" button
+                     detailsHtml += `<button id="add_to_total_btn" class="add-to-total-button">添加到累计</button>`;
+
 
                     resultDiv.innerHTML = detailsHtml;
                     resultDiv.className = 'result-box';
+
+                     // Add event listener to the newly created button
+                     const addToTotalBtn = document.getElementById('add_to_total_btn');
+                     if(addToTotalBtn) {
+                         addToTotalBtn.addEventListener('click', addToAccumulation);
+                     }
+
                 } else {
                      throw new Error('未能执行计算。');
                 }
@@ -820,17 +1105,31 @@
                 // --- Display Error ---
                 resultDiv.textContent = error.message;
                 resultDiv.className = 'error-box';
+                 currentCalculationResult = { description: '', score: 0, valid: false }; // Invalidate temp result on error
             }
         });
 
+         // Listener for Clear Accumulation Button
+         clearAccumulationBtn.addEventListener('click', () => {
+             accumulatedPoints = []; // Clear the array
+             updateAccumulationDisplay(); // Update the display
+         });
+
         // --- Initial Setup ---
         document.querySelector('input[name="calc_type"]:checked').dispatchEvent(new Event('change'));
+        // Trigger initial formula display for dropdowns if their section is visible by default
         if (document.querySelector('input[name="calc_type"]:checked').value === 'dual_line') {
              updateFormulaDisplay(dualLineSubtypeSelect, dlFormulaDisplay);
         }
         if (document.querySelector('input[name="calc_type"]:checked').value === 'fixed_app') {
              updateFormulaDisplay(fixedAppSubtypeSelect, faFormulaDisplay);
         }
+         if (document.querySelector('input[name="calc_type"]:checked').value === 'iot') {
+             updateFormulaDisplay(iotSubtypeSelect, iotFormulaDisplay);
+        }
+        // Initial display update for accumulation section (it will be hidden initially)
+        updateAccumulationDisplay();
+
 
     </script>
 </body>

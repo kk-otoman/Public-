@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>政企积分计算器 (带累计功能)</title>
+    <title>政企积分计算器</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body {
@@ -74,10 +74,10 @@
         /* Direct CSS for Accumulation Section Box */
         #accumulation_section {
             @apply mt-10; /* Keep margin-top */
-            border: 1px solid #d1d5db; /* Gray border (Tailwind gray-300) */
-            border-radius: 0.375rem; /* Medium rounded corners (Tailwind rounded-md) */
-            padding: 1rem; /* Padding inside the box (Tailwind p-4) */
-            box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05); /* Subtle shadow (Tailwind shadow-sm) */
+            border: 1px solid #d1d5db; /* Gray border */
+            border-radius: 0.375rem; /* Medium rounded corners */
+            padding: 1rem; /* Padding inside the box */
+            box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05); /* Subtle shadow */
         }
         #accumulation_section h2 { /* Adjust title style inside the box */
              @apply border-t-0 pt-0 mt-0 mb-3 text-lg font-semibold text-gray-700; /* Remove original top border/padding/margin */
@@ -96,8 +96,7 @@
     <div class="bg-white p-8 rounded-lg shadow-lg max-w-xl w-full">
         <h1 class="text-2xl font-bold text-center text-gray-800 mb-6">政企积分计算器</h1>
 
-
-         <div class="mb-4">
+        <div class="mb-4">
             <span class="block text-sm font-medium text-gray-700 mb-1">计算类型:</span>
             <div class="radio-group">
                 <div class="flex items-center mr-4 mb-2">
@@ -128,9 +127,17 @@
                     <input type="radio" id="type_iot" name="calc_type" value="iot" class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300">
                     <label for="type_iot" class="radio-label">物联网标品</label>
                 </div>
-                 <div class="flex items-center mb-2">
+                 <div class="flex items-center mr-4 mb-2">
                     <input type="radio" id="type_idc_etc" name="calc_type" value="idc_etc" class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300">
                     <label for="type_idc_etc" class="radio-label">IDC/跨境/BPO</label>
+                </div>
+                 <div class="flex items-center mb-2">
+                    <input type="radio" id="type_unicom_cloud" name="calc_type" value="unicom_cloud" class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300">
+                    <label for="type_unicom_cloud" class="radio-label">联通云标品</label>
+                </div>
+                 <div class="flex items-center mb-2">
+                    <input type="radio" id="type_big_data" name="calc_type" value="big_data" class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300">
+                    <label for="type_big_data" class="radio-label">大数据标品</label>
                 </div>
             </div>
         </div>
@@ -464,6 +471,57 @@
              </div>
         </div>
 
+        <div id="unicom_cloud_section" class="hidden-section mb-4">
+             <h2 class="section-title">联通云标品信息</h2>
+              <div class="notes-display mb-2">
+                 计算周期：12个月。
+                 <br>参考毛利率：行业云(骨干云)/视频云/云桌面/云市场/云联至简 ≈ 33%；手机视频广告 ≈ 27%。
+             </div>
+             <div class="mb-4 input-group">
+                <label for="uc_revenue">年准财收入 (元):</label>
+                <input type="number" id="uc_revenue" name="uc_revenue" placeholder="输入年准财收入" class="input-field">
+             </div>
+              <div class="mb-4 input-group">
+                <label for="uc_avg_margin_rate">平均毛利率 (%):</label>
+                <input type="number" id="uc_avg_margin_rate" name="uc_avg_margin_rate" placeholder="例如: 33 (表示33%)" class="input-field">
+             </div>
+             <div class="mb-4 input-group">
+                 <span class="block text-sm font-medium text-gray-700">是否重点产品:</span>
+                 <div class="checkbox-group">
+                    <input type="checkbox" id="uc_is_key_product" name="uc_is_key_product" value="1.2" class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded">
+                    <label for="uc_is_key_product" class="checkbox-label">是 (行业云/视频云/云桌面/云联至简, 系数 1.2)</label>
+                 </div>
+             </div>
+             <div id="uc_formula_display" class="formula-display">
+                  积分标准：准财收入 × 平均毛利率 × 20% × 重点产品系数
+             </div>
+        </div>
+
+        <div id="big_data_section" class="hidden-section mb-4">
+             <h2 class="section-title">大数据标品信息</h2>
+             <div class="notes-display mb-2">
+                 计算周期：12个月。
+             </div>
+             <div class="mb-4 input-group">
+                <label for="bd_revenue">年准财收入 (元):</label>
+                <input type="number" id="bd_revenue" name="bd_revenue" placeholder="输入年准财收入" class="input-field">
+             </div>
+              <div class="mb-4 input-group">
+                <label for="bd_avg_margin_rate">平均毛利率 (%):</label>
+                <input type="number" id="bd_avg_margin_rate" name="bd_avg_margin_rate" placeholder="输入平均毛利率(%)" class="input-field">
+             </div>
+             <div class="mb-4 input-group">
+                 <span class="block text-sm font-medium text-gray-700">是否重点产品:</span>
+                 <div class="checkbox-group">
+                    <input type="checkbox" id="bd_is_key_product" name="bd_is_key_product" value="1.2" class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded">
+                    <label for="bd_is_key_product" class="checkbox-label">是 (数睿广告/智慧信息/传媒大数据, 系数 1.2)</label>
+                 </div>
+             </div>
+              <div id="bd_formula_display" class="formula-display">
+                  积分标准：准财收入 × 平均毛利率 × 20% × 重点产品系数
+             </div>
+        </div>
+
 
         <button id="calculateBtn" class="calculate-button">计算积分</button>
 
@@ -491,6 +549,8 @@
         const ictSection = document.getElementById('ict_section');
         const iotSection = document.getElementById('iot_section');
         const idcEtcSection = document.getElementById('idc_etc_section');
+        const unicomCloudSection = document.getElementById('unicom_cloud_section'); // New Unicom Cloud
+        const bigDataSection = document.getElementById('big_data_section'); // New Big Data
         const accumulationSection = document.getElementById('accumulation_section');
         const accumulationList = document.getElementById('accumulation_list');
         const accumulationTotal = document.getElementById('accumulation_total');
@@ -536,6 +596,18 @@
         const idcRevenueInput = document.getElementById('idc_revenue');
         const idcFormulaDisplay = document.getElementById('idc_formula_display');
 
+        // Unicom Cloud Elements
+        const ucRevenueInput = document.getElementById('uc_revenue');
+        const ucAvgMarginRateInput = document.getElementById('uc_avg_margin_rate');
+        const ucIsKeyProductCheckbox = document.getElementById('uc_is_key_product');
+        const ucFormulaDisplay = document.getElementById('uc_formula_display');
+
+        // Big Data Elements
+        const bdRevenueInput = document.getElementById('bd_revenue');
+        const bdAvgMarginRateInput = document.getElementById('bd_avg_margin_rate');
+        const bdIsKeyProductCheckbox = document.getElementById('bd_is_key_product');
+        const bdFormulaDisplay = document.getElementById('bd_formula_display');
+
 
         const mobilePriceInput = document.getElementById('mobile_price');
         const monthlyContributionInput = document.getElementById('monthly_contribution');
@@ -546,8 +618,8 @@
         const resultDiv = document.getElementById('result');
 
         // --- State Variables ---
-        let accumulatedPoints = []; // Array to store { description, score } objects
-        let currentCalculationResult = { description: '', score: 0, valid: false }; // Temp store for last calculation
+        let accumulatedPoints = [];
+        let currentCalculationResult = { description: '', score: 0, valid: false };
 
         // --- Constants ---
         const defaultCardTypeCoefficient = 0.8;
@@ -559,13 +631,17 @@
         const ICT_TOTAL_POINTS_CAP = 60000;
         const ICT_MONTHLY_POINTS_CAP = 5000;
         const ICT_REVENUE_THRESHOLD = 5000000;
-        const ICT_MARGIN_THRESHOLD_LOW = 10; // 10%
-        const ICT_MARGIN_THRESHOLD_HIGH = 15; // 15%
-        const IOT_BASE_COEFF = 0.20; // 20%
+        const ICT_MARGIN_THRESHOLD_LOW = 10;
+        const ICT_MARGIN_THRESHOLD_HIGH = 15;
+        const IOT_BASE_COEFF = 0.20;
         const IOT_CONNECTION_REVENUE_COEFF = 0.5;
-        const IDC_ETC_COEFF_1 = 0.10; // 10%
-        const IDC_ETC_COEFF_2 = 0.05; // 5%
-        const IOT_KEY_PRODUCT_COEFF = 1.2; // Assumed coefficient for key product
+        const IDC_ETC_COEFF_1 = 0.10;
+        const IDC_ETC_COEFF_2 = 0.05;
+        const IOT_KEY_PRODUCT_COEFF = 1.2;
+        const UNICOM_CLOUD_BASE_COEFF = 0.20; // 20%
+        const UNICOM_CLOUD_KEY_COEFF = 1.2;
+        const BIG_DATA_BASE_COEFF = 0.20; // 20%
+        const BIG_DATA_KEY_COEFF = 1.2;
 
 
         // --- Helper Functions ---
@@ -578,17 +654,20 @@
             ictSection.classList.add('hidden-section');
             iotSection.classList.add('hidden-section');
             idcEtcSection.classList.add('hidden-section');
+            unicomCloudSection.classList.add('hidden-section'); // Hide new sections
+            bigDataSection.classList.add('hidden-section');
         }
 
         function clearResult() {
             resultDiv.innerHTML = '';
             resultDiv.className = 'mt-6';
-            currentCalculationResult = { description: '', score: 0, valid: false }; // Clear temp result
+            currentCalculationResult = { description: '', score: 0, valid: false };
         }
 
         // Function to update formula display text
         function updateFormulaDisplay(selectElement, displayElement) {
-            const selectedValue = selectElement.value;
+            // Existing logic for dual_line, fixed_app, iot...
+             const selectedValue = selectElement.value;
             let formulaText = '';
 
             if (selectElement.id === 'dual_line_subtype') {
@@ -631,13 +710,13 @@
                         break;
                  }
             }
-            // IDC/Etc formula is static, handled in HTML
+            // No dynamic formula needed for Unicom Cloud or Big Data based on selection within them
             if(displayElement) displayElement.textContent = formulaText;
         }
 
         // Function to update the accumulation list and total display
         function updateAccumulationDisplay() {
-            accumulationList.innerHTML = ''; // Clear current list
+            accumulationList.innerHTML = '';
             let total = 0;
             accumulatedPoints.forEach(item => {
                 const li = document.createElement('li');
@@ -646,7 +725,6 @@
                 total += item.score;
             });
             accumulationTotal.textContent = `累计总积分: ${total.toFixed(3)}`;
-            // Show the accumulation section if there are items
             if (accumulatedPoints.length > 0) {
                 accumulationSection.classList.remove('hidden-section');
             } else {
@@ -662,7 +740,6 @@
                     score: currentCalculationResult.score
                  });
                  updateAccumulationDisplay();
-                 // Clear the main result area after adding
                  clearResult();
             }
         }
@@ -674,19 +751,15 @@
         calcTypeRadios.forEach(radio => {
             radio.addEventListener('change', function() {
                 hideAllSections();
-                clearResult(); // Clear result when changing main type
+                clearResult();
 
                 switch(this.value) {
-                    case 'mobile':
-                        mobileSection.classList.remove('hidden-section');
-                        break;
+                    case 'mobile': mobileSection.classList.remove('hidden-section'); break;
                     case 'broadband':
                         broadbandSection.classList.remove('hidden-section');
                         document.querySelector('input[name="broadband_type"]:checked').dispatchEvent(new Event('change'));
                         break;
-                    case 'convergence':
-                        convergenceSection.classList.remove('hidden-section');
-                        break;
+                    case 'convergence': convergenceSection.classList.remove('hidden-section'); break;
                     case 'dual_line':
                         dualLineSection.classList.remove('hidden-section');
                         dualLineSubtypeSelect.dispatchEvent(new Event('change'));
@@ -695,16 +768,14 @@
                         fixedAppSection.classList.remove('hidden-section');
                         fixedAppSubtypeSelect.dispatchEvent(new Event('change'));
                         break;
-                    case 'ict':
-                        ictSection.classList.remove('hidden-section');
-                        break;
+                    case 'ict': ictSection.classList.remove('hidden-section'); break;
                     case 'iot':
                         iotSection.classList.remove('hidden-section');
                         iotSubtypeSelect.dispatchEvent(new Event('change'));
                         break;
-                     case 'idc_etc':
-                        idcEtcSection.classList.remove('hidden-section');
-                        break;
+                     case 'idc_etc': idcEtcSection.classList.remove('hidden-section'); break;
+                     case 'unicom_cloud': unicomCloudSection.classList.remove('hidden-section'); break; // Show Unicom Cloud
+                     case 'big_data': bigDataSection.classList.remove('hidden-section'); break; // Show Big Data
                 }
             });
         });
@@ -766,18 +837,18 @@
 
         // Listener for Calculate Button
         calculateBtn.addEventListener('click', () => {
-            clearResult(); // Clear previous result display first
+            clearResult();
 
             const selectedCalcType = document.querySelector('input[name="calc_type"]:checked').value;
             let finalScore = 0;
             let detailsHtml = '';
             let calculationFactors = {};
-            let isValidCalculation = false; // Flag to check if calculation succeeded
+            let isValidCalculation = false;
 
             try {
                 switch(selectedCalcType) {
                     case 'mobile':
-                        { // Block scope for const/let
+                        {
                             const price = parseFloat(mobilePriceInput.value);
                             if (isNaN(price) || price <= 0) throw new Error('请输入有效的套餐月租！');
                             const networkTypeCoefficient = parseFloat(document.querySelector('input[name="network_type_mobile"]:checked').value);
@@ -798,7 +869,7 @@
                         break;
 
                     case 'broadband':
-                         { // Block scope
+                         {
                             const selectedBroadbandType = document.querySelector('input[name="broadband_type"]:checked').value;
                             if (selectedBroadbandType === 'non_annual') {
                                 const monthlyContribution = parseFloat(monthlyContributionInput.value);
@@ -833,7 +904,7 @@
                         break;
 
                     case 'convergence':
-                         { // Block scope
+                         {
                             const contribution = parseFloat(convergenceContributionInput.value);
                             if (isNaN(contribution) || contribution <= 0) throw new Error('请输入有效的入网套餐值贡献金额！');
                             const networkCoefficientConv = parseFloat(document.querySelector('input[name="network_type_convergence"]:checked').value);
@@ -856,7 +927,7 @@
                         break;
 
                     case 'dual_line':
-                         { // Block scope
+                         {
                             const selectedDualLineType = dualLineSubtypeSelect.value;
                             const dlRevenue = parseFloat(dlRevenueInput.value);
                             if (isNaN(dlRevenue) || dlRevenue < 0) throw new Error('请输入有效的年准财收入！');
@@ -899,7 +970,7 @@
                         break;
 
                     case 'fixed_app':
-                        { // Block scope
+                        {
                             const selectedFixedAppType = fixedAppSubtypeSelect.value;
                             const faRevenue = parseFloat(faRevenueInput.value);
                             if (isNaN(faRevenue) || faRevenue < 0) throw new Error('请输入有效的年准财收入！');
@@ -929,7 +1000,7 @@
                         break;
 
                     case 'ict':
-                        { // Block scope
+                        {
                             const amountReceived = parseFloat(ictAmountReceivedInput.value);
                             const grossMarginRate = parseFloat(ictGrossMarginRateInput.value);
                             const totalRevenue = parseFloat(ictTotalRevenueInput.value);
@@ -1032,13 +1103,66 @@
                             const revenue = parseFloat(idcRevenueInput.value);
                             if (isNaN(revenue) || revenue < 0) throw new Error('请输入有效的准财收入！');
                             finalScore = revenue * IDC_ETC_COEFF_1 * IDC_ETC_COEFF_2;
+                            // Apply caps for IDC (assuming this category includes IDC)
+                            const cappedScore = Math.min(finalScore, ICT_TOTAL_POINTS_CAP); // Apply 60k cap (assuming it applies to the total calculated score for the period)
+                            // Monthly cap logic is complex here as it depends on previous months.
+                            // For simplicity, we'll just show the period-capped score.
+                            // A real implementation would need tracking.
+                            finalScore = cappedScore; // Use the capped score for display
+
                             calculationFactors = {
                                 '计算类型': 'IDC/跨境/BPO',
                                 '准财收入': `${revenue.toFixed(2)} 元`,
                                 '系数1': `${(IDC_ETC_COEFF_1 * 100).toFixed(0)}%`,
                                 '系数2': `${(IDC_ETC_COEFF_2 * 100).toFixed(1)}%`,
                                 '计算周期': '12个月',
-                                '备注': 'IDC有单项目/单月封顶值'
+                                '备注': 'IDC有单项目6万/单月5千封顶值 (计算结果已应用总额上限)'
+                            };
+                             isValidCalculation = true;
+                        }
+                        break;
+                     case 'unicom_cloud': // New Unicom Cloud Calculation
+                        {
+                            const revenue = parseFloat(ucRevenueInput.value);
+                            const avgMarginRate = parseFloat(ucAvgMarginRateInput.value);
+                            if (isNaN(revenue) || revenue < 0) throw new Error('请输入有效的年准财收入！');
+                            if (isNaN(avgMarginRate) || avgMarginRate < 0) throw new Error('请输入有效的平均毛利率 (%)！'); // Allow 0 margin
+
+                            const isKeyProduct = ucIsKeyProductCheckbox.checked;
+                            const keyProductCoeff = isKeyProduct ? UNICOM_CLOUD_KEY_COEFF : 1.0;
+
+                            finalScore = revenue * (avgMarginRate / 100) * UNICOM_CLOUD_BASE_COEFF * keyProductCoeff;
+
+                            calculationFactors = {
+                                '计算类型': '联通云标品',
+                                '年准财收入': `${revenue.toFixed(2)} 元`,
+                                '平均毛利率': `${avgMarginRate.toFixed(2)} %`,
+                                '基础系数': `${(UNICOM_CLOUD_BASE_COEFF * 100).toFixed(0)}%`,
+                                '重点产品系数': `${keyProductCoeff.toFixed(1)} (${isKeyProduct ? '是' : '否'})`,
+                                '计算周期': '12个月'
+                            };
+                             isValidCalculation = true;
+                        }
+                        break;
+                     case 'big_data': // New Big Data Calculation
+                         {
+                            const revenue = parseFloat(bdRevenueInput.value);
+                            const avgMarginRate = parseFloat(bdAvgMarginRateInput.value);
+                            if (isNaN(revenue) || revenue < 0) throw new Error('请输入有效的年准财收入！');
+                            if (isNaN(avgMarginRate) || avgMarginRate < 0) throw new Error('请输入有效的平均毛利率 (%)！');
+
+                            const isKeyProduct = bdIsKeyProductCheckbox.checked;
+                            const keyProductCoeff = isKeyProduct ? BIG_DATA_KEY_COEFF : 1.0;
+
+                            finalScore = revenue * (avgMarginRate / 100) * BIG_DATA_BASE_COEFF * keyProductCoeff;
+
+                             calculationFactors = {
+                                '计算类型': '大数据标品',
+                                '年准财收入': `${revenue.toFixed(2)} 元`,
+                                '平均毛利率': `${avgMarginRate.toFixed(2)} %`,
+                                '基础系数': `${(BIG_DATA_BASE_COEFF * 100).toFixed(0)}%`,
+                                '重点产品系数': `${keyProductCoeff.toFixed(1)} (${isKeyProduct ? '是' : '否'})`,
+                                '计算周期': '12个月'
                             };
                              isValidCalculation = true;
                         }

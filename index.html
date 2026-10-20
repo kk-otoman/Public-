@@ -91,9 +91,8 @@
         label { @apply mb-1 block; }
         .input-group label { @apply mb-1 block text-sm font-medium text-gray-700; }
     </style>
-    <!-- GoatCounter 访问统计: 注册 https://my-goatcounter.com 后把 YOUR-CODE 换成你的站点代码 -->
-    <script data-goatcounter="https://YOUR-CODE.goatcounter.com/count"
-            async src="//gc.zgo.at/count.js"></script>
+    <!-- 不蒜子访问统计 -->
+    <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
 </head>
 <body class="bg-gray-50 flex items-center justify-center min-h-screen p-4">
     <div class="bg-white p-8 rounded-lg shadow-lg max-w-xl w-full">
@@ -538,6 +537,7 @@
              </div>
              <button id="clear_accumulation_btn" class="clear-button">清空累计</button>
         </div>
+        <p class="text-center text-xs text-gray-400 mt-6">本页累计访问 <span id="busuanzi_value_site_pv"></span> 次 · 访客 <span id="busuanzi_value_site_uv"></span> 人</p>
 
     </div>
 

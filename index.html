@@ -537,7 +537,8 @@
              </div>
              <button id="clear_accumulation_btn" class="clear-button">清空累计</button>
         </div>
-        <p class="text-center text-xs text-gray-400 mt-6">本页累计访问 <span id="busuanzi_value_site_pv"></span> 次 · 访客 <span id="busuanzi_value_site_uv"></span> 人</p>
+        <p id="stat_display" class="text-center text-xs text-gray-400 mt-6" style="display:none">本页累计访问 <span id="busuanzi_value_site_pv"></span> 次 · 访客 <span id="busuanzi_value_site_uv"></span> 人</p>
+        <script>if (location.hash === '#stat') document.getElementById('stat_display').style.display = '';</script>
 
     </div>
 
